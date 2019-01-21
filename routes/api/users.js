@@ -3,13 +3,25 @@ const router = express.Router()
 const gravatar = require('gravatar')
 const bcrypt = require('bcryptjs')
 
+const messages = {
+  users: {
+    works: 'Users works!',
+    email: 'Email already exists',
+    notFound: 'Email not found',
+    doesntMatch: `Email and password doesn't match!`
+  },
+  generic: {
+    success: 'Success!!'
+  }
+}
+
 // Load User model
 const UserModel = require('../../models/User')
 
 // @route   GET api/users/test
 // @desc    Tests Users route
 // @access  Public
-router.get('/test', (req, res) => res.json({msg: 'Users works'}))
+router.get('/test', (req, res) => res.json({ msg: messages.users.works }))
 
 // @route   GET api/users/register
 // @desc    Register user
@@ -19,7 +31,7 @@ router.post('/register', (req, res) => {
     .findOne({ email: req.body.email })
     .then(user => {
       if(user) {
-        return res.status(400).json({ email: 'Email already exists'})
+        return res.status(400).json({ email: messages.users.email})
       } else {
 
         // Get the gravatar from email if it exists
@@ -49,6 +61,35 @@ router.post('/register', (req, res) => {
           })
         })
       }
+    })
+})
+
+// @route   GET api/users/login
+// @desc    Login User / Returning JWT Token
+// @access  Public
+router.post('/login', (req, res) => {
+  const email = req.body.email
+  const password = req.body.password
+
+  // Find user by email
+  UserModel
+    .findOne({email})
+    .then(user => {
+      // Check for user
+      if (!user) {
+        return res.status(404).json({ messages: messages.users.notFound })
+      }
+
+      // Check Password
+      bcrypt
+        .compare(password, user.password)
+        .then(isMatch => {
+          if (isMatch) {
+            res.json({ msg: messages.generic.success })
+          } else {
+            return res.status(400).json({ password: messages.users.doesntMatch })
+          }
+        })
     })
 })
 
