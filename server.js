@@ -1,6 +1,11 @@
 const express = require('express')
 const mongoose = require('mongoose')
 
+const posts = require('./routes/api/posts')
+const profile = require('./routes/api/profile')
+const users = require('./routes/api/users')
+
+// Instantianting the express backend main var
 const backendApp = express()
 
 // DB Config
@@ -13,6 +18,11 @@ mongoose
   .catch(err => console.log(err))
 
 backendApp.get('/', (req, res) => res.send('Hello, Musicial!!!'))
+
+// Use Routes
+backendApp.use('/api/posts', posts)
+backendApp.use('/api/profile', profile)
+backendApp.use('/api/users', users)
 
 const port = process.env.PORT || 5000
 
