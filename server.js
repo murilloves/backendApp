@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
 
 const posts = require('./routes/api/posts')
 const profile = require('./routes/api/profile')
@@ -7,6 +8,10 @@ const users = require('./routes/api/users')
 
 // Instantianting the express backend main var
 const backendApp = express()
+
+// Body parser middleware
+backendApp.use(bodyParser.urlencoded({extended: false}))
+backendApp.use(bodyParser.json())
 
 // DB Config
 const dbConfig = require('./config/keys').mongoURI
