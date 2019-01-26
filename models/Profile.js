@@ -35,7 +35,7 @@ const ProfileSchema = new Schema({
   musicPlatform: {
     type: String
   },
-  experiences: [
+  experience: [
     {
       title: {
         type: String,
@@ -53,7 +53,7 @@ const ProfileSchema = new Schema({
         required: true
       },
       toDate: {
-        type: String,
+        type: Date,
       },
       current: {
         type: Boolean,
