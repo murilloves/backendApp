@@ -7,12 +7,18 @@ const posts = require('./routes/api/posts')
 const profile = require('./routes/api/profile')
 const users = require('./routes/api/users')
 
+// Init cors and config
+const cors = require('cors')
+
 // Instantianting the express backend main var
 const backendApp = express()
 
 // Body parser middleware
 backendApp.use(bodyParser.urlencoded({extended: false}))
 backendApp.use(bodyParser.json())
+backendApp.use(cors({
+  origin: '*'
+}))
 
 // DB Config
 const dbConfig = require('./config/keys').mongoURI
