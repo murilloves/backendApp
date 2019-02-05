@@ -82,6 +82,28 @@ router.get('/:id',
 })
 
 
+// @route   DELETE api/playlists/:id
+// @desc    Delete playlist
+// @access  Private
+router.delete('/:id',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        PlaylistModel.findById(req.params.id)
+          .then(playlist => {
+            // Check for playlist owner
+            if(playlist.user.toString() !== req.user.id) {
+              return res.status(401).json({ notAuthorized: 'User not authorized' })
+            }
+
+            playlist.remove().then(() => res.json({ success: true }))
+          })
+          .catch(err => res.status(404).json({ postNotFound: 'Couldn\'t remove the playlist (it doesn\'t exist)' }))
+      })
+})
+
+
 // @route   POST api/playlist
 // @desc    Create or edit a Playlist
 // @access  Private
