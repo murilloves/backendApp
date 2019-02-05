@@ -6,6 +6,7 @@ const passport = require('passport')
 const posts = require('./routes/api/posts')
 const profile = require('./routes/api/profile')
 const users = require('./routes/api/users')
+const playlists = require('./routes/api/playlists')
 
 // Init cors and config
 const cors = require('cors')
@@ -42,6 +43,7 @@ require('./config/passport')(passport)
 backendApp.use('/api/posts', posts)
 backendApp.use('/api/profile', profile)
 backendApp.use('/api/users', users)
+backendApp.use('/api/playlists', playlists)
 
 const port = process.env.PORT || 5000
 
