@@ -17,13 +17,13 @@ const PlaylistSchema = new Schema({
         type: String,
         required: true
       },
-      composer: {
-        type: String
-      },
       key: {
         type: String
       },
-      moment: {
+      author: {
+        type: String
+      },
+      desc: {
         type: String
       }
     }

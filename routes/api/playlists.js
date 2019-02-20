@@ -60,6 +60,44 @@ router.get('/all',
 })
 
 
+// @route   POST api/playlists/:id
+// @desc    Add song to a playlist
+// @access  Private
+router.post('/:id/addSong',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        PlaylistModel.findById(req.params.id)
+          .then(playlist => {
+            // Check for playlist owner
+            if(playlist.user.toString() !== req.user.id) {
+              return res.status(401).json({ notAuthorized: 'User not authorized' })
+            }
+
+            if (!req.body.title || req.body.title.trim().length <= 2) {
+              res.status(400).json({ mustHaveTitle: 'The song must have a name' })
+            } else {
+              const newSong = {
+                title: req.body.title,
+                key: req.body.key,
+                author: req.body.author,
+                desc: req.body.desc
+              }
+  
+              // Add to playlist's array
+              playlist.songs.push(newSong)
+  
+              // res.json(playlist)
+              // Save the playlist
+              playlist.save().then(playlist => res.json(playlist))
+            }
+          })
+          .catch(err => res.status(404).json({ playlistNotFound: 'Couldn\'t find the playlist (it doesn\'t exist)' }))
+      })
+})
+
+
 // @route   GET api/playlists/:id
 // @desc    Get Playlist by user by id
 // @access  Private
