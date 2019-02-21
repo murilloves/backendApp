@@ -38,7 +38,6 @@ backendApp.use(passport.initialize())
 // Passport Config
 require('./config/passport')(passport)
 
-
 // Use Routes
 backendApp.use('/api/posts', posts)
 backendApp.use('/api/profile', profile)
