@@ -86,7 +86,7 @@ router.post('/:id/addSong',
               }
               // If editing a song
               if (req.body._id) {
-                let songModifyIndex = playlist.songs.findIndex(element => element._id == newSong._id)
+                let songModifyIndex = playlist.songs.findIndex(element => element._id == req.body._id)
 
                 songModifyIndex < 0
                   ? playlist.songs.push(newSong)
