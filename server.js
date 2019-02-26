@@ -44,4 +44,4 @@ backendApp.use('/api/profile', profile)
 backendApp.use('/api/users', users)
 backendApp.use('/api/playlists', playlists)
 
-backendApp.listen(process.env.PORT || 5000, () => console.log(`\nServer running on port ${port}`))
+backendApp.listen(process.env.PORT || 5000, () => console.log(`\nServer running`))
