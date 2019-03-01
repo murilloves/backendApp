@@ -61,7 +61,7 @@ router.get('/all',
 
 
 // @route   POST api/playlists/:id
-// @desc    Add song to a playlist
+// @desc    Add or Update a song to :id playlist
 // @access  Private
 router.post('/:id/addSong',
   passport.authenticate('jwt', { session: false }),
@@ -88,12 +88,44 @@ router.post('/:id/addSong',
               // Add to playlist's array
               playlist.songs.push(newSong)
   
-              // res.json(playlist)
               // Save the playlist
               playlist.save().then(playlist => res.json(playlist))
             }
           })
           .catch(err => res.status(404).json({ playlistNotFound: 'Couldn\'t find the playlist (it doesn\'t exist)' }))
+      })
+})
+
+
+// @route   DELETE api/playlists/:id/deleteSong
+// @desc    Delete a song from a playlist
+// @access  Private
+router.delete('/:id/deleteSong',
+  passport.authenticate('jwt', { session: false }),
+  (req, res) => {
+    Profile.findOne({ user: req.user.id })
+      .then(profile => {
+        PlaylistModel.findById(req.params.id)
+          .then(playlist => {
+            // Check for playlist owner
+            if(playlist.user.toString() !== req.user.id) {
+              return res.status(401).json({ notAuthorized: 'User not authorized' })
+            }
+
+            // Get the song index
+            const songIndex = playlist.songs.findIndex(song => song._id == req.body._id);
+
+            if (songIndex !== -1) {
+              // Pop the element to be removed
+              playlist.songs.pull({ _id: req.body._id })
+
+              // Save updated playlist
+              playlist.save().then(playlist => res.json(playlist))
+            } else {
+              res.status(404).json({ songNotFound: 'Couldn\'t find the song (it could already been deleted)' })
+            }
+          })
+          .catch(err => res.status(404).json({ songNotFound: 'Couldn\'t find the song (it could already been deleted)' }))
       })
 })
 
