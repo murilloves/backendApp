@@ -110,10 +110,10 @@ router.post('/:id/addSong',
 })
 
 
-// @route   DELETE api/playlists/:id/deleteSong
-// @desc    Delete a song from a playlist
+// @route   POST api/playlists/:id/removeSong
+// @desc    Remove a song from a playlist
 // @access  Private
-router.delete('/:id/deleteSong',
+router.post('/:id/removeSong',
   passport.authenticate('jwt', { session: false }),
   (req, res) => {
     Profile.findOne({ user: req.user.id })
