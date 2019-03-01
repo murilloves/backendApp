@@ -84,10 +84,23 @@ router.post('/:id/addSong',
                 author: req.body.author,
                 desc: req.body.desc
               }
-  
-              // Add to playlist's array
-              playlist.songs.push(newSong)
-  
+              // If editing a song
+              if (req.body._id) {
+                let songModifyIndex = playlist.songs.findIndex(element => element._id == req.body._id)
+
+                songModifyIndex < 0
+                  ? playlist.songs.push(newSong)
+                  : (
+                    newSong._id = req.body._id,
+                    playlist.songs[songModifyIndex] = newSong
+                  )
+              // If adding a new song
+              } else {
+                // Add to playlist's array
+                playlist.songs.push(newSong)
+              }
+
+              // res.json(playlist)
               // Save the playlist
               playlist.save().then(playlist => res.json(playlist))
             }
