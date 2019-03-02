@@ -60,7 +60,7 @@ router.get('/all',
 })
 
 
-// @route   POST api/playlists/:id
+// @route   POST api/playlists/:id/addSong
 // @desc    Add or Update a song to :id playlist
 // @access  Private
 router.post('/:id/addSong',
@@ -75,7 +75,7 @@ router.post('/:id/addSong',
               return res.status(401).json({ notAuthorized: 'User not authorized' })
             }
 
-            if (!req.body.title || req.body.title.trim().length <= 2) {
+            if (!req.body.title || req.body.title.trim().length < 1) {
               res.status(400).json({ mustHaveTitle: 'The song must have a name' })
             } else {
               const newSong = {
@@ -203,14 +203,30 @@ router.post(
     }
 
     // Get fields
-    const newPlaylist = new PlaylistModel({
+    const playlist = new PlaylistModel({
       playlistName: req.body.playlistName,
       songs: req.body.songs,
       user: req.user.id
     });
 
-    newPlaylist.save().then(playlist => res.json(playlist))
-    // return res.status(200).json('all right')
+    if (req.body.playlistId) {
+      // Update
+      PlaylistModel.findById(req.body.playlistId)
+        .then(fetchedPlaylist => {
+          if (req.body.playlistName) fetchedPlaylist.playlistName = req.body.playlistName
+
+          PlaylistModel.findByIdAndUpdate(
+            req.body.playlistId,
+            fetchedPlaylist,
+            { new: true }
+          ).then(response => res.json(response))
+        })
+        .catch(err => res.status(404).json({ playlistNotFound: 'Couldn\'t find the playlist' }))
+
+    } else {
+      // Save new playlist
+      playlist.save().then(response => res.json(response))
+    }
 })
 
 module.exports = router
