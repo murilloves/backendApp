@@ -11,6 +11,9 @@ const PlaylistSchema = new Schema({
     type: String,
     required: true
   },
+  date: {
+    type: Date
+  },
   songs: [
     {
       title: {

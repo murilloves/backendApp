@@ -15,49 +15,24 @@ const validatePlaylistInput = require('../../validation/playlist')
 // @access  Public
 router.get('/test', (req, res) => res.json({msg: 'Playlists works'}))
 
-// @route   GET api/playlists/
-// @desc    Get all Playlists
-// @access  Public
-router.get('/', (req, res) => {
-  PlaylistModel.find()
-    .sort({ date: 1 })
-    .then(playlists => {
-      const errors = {};
+// // @route   GET api/playlists/
+// // @desc    Get all Playlists
+// // @access  Public
+// router.get('/', (req, res) => {
+//   PlaylistModel.find()
+//     .sort({ date: 1 })
+//     .then(playlists => {
+//       const errors = {};
 
-      if (!playlists) {
-        errors.noplaylists = 'There are no playlists'
-        return res.status(404).json(errors)
-      }
+//       if (!playlists) {
+//         errors.noplaylists = 'There are no playlists'
+//         return res.status(404).json(errors)
+//       }
 
-      res.json(playlists)
-    })
-    .catch(err => res.status(400).json({ playlist: 'Error fetching the playlists' }))
-})
-
-
-// @route   GET api/playlists/all
-// @desc    Get all Playlists by user
-// @access  Private
-router.get('/all',
-  passport.authenticate('jwt', { session: false }),
-  (req, res) => {
-    Profile.findOne({ user: req.user.id })
-      .then(profile => {
-        PlaylistModel.find()
-          .then(playlists => {
-            const userPlaylists = []
-            // Check for playlists from user owner
-            for (indx in playlists) {
-              if(playlists[indx].user.toString() === req.user.id.toString()) {
-                userPlaylists.push(playlists[indx])
-              }
-            }
-
-            res.json(userPlaylists)
-          })
-          .catch(err => res.status(404).json({ playlistsNotFound: 'Couldn\'t find any playlists' }))
-      })
-})
+//       res.json(playlists)
+//     })
+//     .catch(err => res.status(400).json({ playlist: 'Error fetching the playlists' }))
+// })
 
 
 // @route   POST api/playlists/:id/addSong
@@ -143,6 +118,33 @@ router.post('/:id/removeSong',
 })
 
 
+// @route   GET api/playlists/all
+// @desc    Get all Playlists by user
+// @access  Private
+router.get('/all',
+passport.authenticate('jwt', { session: false }),
+(req, res) => {
+  Profile.findOne({ user: req.user.id })
+    .then(profile => {
+      PlaylistModel
+        .find()
+        .sort({date: 'desc'})
+        .then(playlists => {
+          const userPlaylists = []
+          // Check for playlists from user owner
+          for (indx in playlists) {
+            if(playlists[indx].user.toString() === req.user.id.toString()) {
+              userPlaylists.push(playlists[indx])
+            }
+          }
+
+          res.json(userPlaylists)
+        })
+        .catch(err => res.status(404).json({ playlistsNotFound: 'Couldn\'t find any playlists' }))
+    })
+})
+
+
 // @route   GET api/playlists/:id
 // @desc    Get Playlist by user by id
 // @access  Private
@@ -160,7 +162,7 @@ router.get('/:id',
 
             res.json(playlist)
           })
-          .catch(err => res.status(404).json({ postNotFound: 'Couldn\'t find the playlist' }))
+          .catch(err => res.status(404).json({ playlistNotFound: 'Couldn\'t find the playlist' }))
       })
 })
 
@@ -182,13 +184,13 @@ router.delete('/:id',
 
             playlist.remove().then(() => res.json({ success: true }))
           })
-          .catch(err => res.status(404).json({ postNotFound: 'Couldn\'t remove the playlist (it doesn\'t exist)' }))
+          .catch(err => res.status(404).json({ playlistNotFound: 'Couldn\'t remove the playlist (it doesn\'t exist)' }))
       })
 })
 
 
 // @route   POST api/playlist
-// @desc    Create or edit a Playlist
+// @desc    Create or update a Playlist
 // @access  Private
 router.post(
   '/',
@@ -205,6 +207,7 @@ router.post(
     // Get fields
     const playlist = new PlaylistModel({
       playlistName: req.body.playlistName,
+      date: new Date,
       songs: req.body.songs,
       user: req.user.id
     });
