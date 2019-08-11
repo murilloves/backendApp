@@ -7,6 +7,7 @@ const posts = require('./routes/api/posts')
 const profile = require('./routes/api/profile')
 const users = require('./routes/api/users')
 const playlists = require('./routes/api/playlists')
+const tales = require('./routes/api/tales')
 
 // Init cors and config
 const cors = require('cors')
@@ -43,5 +44,6 @@ backendApp.use('/api/posts', posts)
 backendApp.use('/api/profile', profile)
 backendApp.use('/api/users', users)
 backendApp.use('/api/playlists', playlists)
+backendApp.use('/api/tales', tales)
 
 backendApp.listen(process.env.PORT || 5000, () => console.log(`\nServer running`))
