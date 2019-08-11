@@ -22,6 +22,10 @@ const validateTaleInput = (data) => {
         errors.text = 'Text field\'s required'
     }
 
+    if (data.password !== 'gnomo420') {
+        errors.password = 'Password doesn\'t macth'
+    }
+
     return {
         errors,
         isValid: isEmpty(errors)
