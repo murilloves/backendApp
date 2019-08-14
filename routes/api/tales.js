@@ -5,6 +5,9 @@ const Validator = require('validator')
 const isEmpty = require('../../validation/is-empty')
 
 
+// Load Access Model
+const AccessModel = require('../../models/Access')
+
 // Load Tales Model
 const TalesModel = require('../../models/Tales')
 
@@ -37,11 +40,30 @@ router.get('/test', (req, res) => res.json({msg: 'Tales works'}))
 // @desc    Get all Tales
 // @access  Public
 router.get('/all', (req, res) => {
+    if (req.body.count_access) {
+        const newAccess = AccessModel({
+            minicontosWebsite: {
+                accessDate: new Date(),
+                ipAddr: req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || (req.connection.socket ? req.connection.socket.remoteAddress : null)
+            }
+        })
+        newAccess.save().then(response => console.log(response));
+    }
+
+    // Returning Tales
     TalesModel
         .find()
         .sort({date: 'desc'})
         .then(tales => {
-            res.status(200).json(tales)
+            if (req.body.get_accesses_number) {
+                // Returning Accesses number also
+                AccessModel.countDocuments().then(result => {
+                    let accesses = { quantity: result };
+                    res.status(200).json({tales, accesses})
+                });
+            } else {
+                res.status(200).json(tales)
+            }
         })
 });
 
