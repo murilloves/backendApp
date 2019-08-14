@@ -62,9 +62,9 @@ router.get('/all', (req, res) => {
 router.post('/all', (req, res) => {
     if (req.body.count_access) {
         const newAccess = AccessModel({
-            minicontosWebsite: {
-                accessDate: new Date(),
-                ipAddr: req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || (req.connection.socket ? req.connection.socket.remoteAddress : null)
+            minicontos_website: {
+                access_date: new Date(),
+                ip_addr: req.headers['x-forwarded-for'] || req.connection.remoteAddress || req.socket.remoteAddress || (req.connection.socket ? req.connection.socket.remoteAddress : null)
             }
         })
         newAccess.save().then(response => console.log(response));
