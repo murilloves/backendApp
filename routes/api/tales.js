@@ -47,6 +47,19 @@ router.get('/test', (req, res) => res.json({msg: 'Tales works'}))
 // @desc    Get all Tales
 // @access  Public
 router.get('/all', (req, res) => {
+    // Returning Tales
+    TalesModel
+        .find()
+        .sort({date: 'desc'})
+        .then(tales => {
+            res.status(200).json(tales)
+        })
+});
+
+// @route   POST api/tales/all
+// @desc    Get all Tales
+// @access  Public
+router.post('/all', (req, res) => {
     if (req.body.count_access) {
         const newAccess = AccessModel({
             minicontosWebsite: {
