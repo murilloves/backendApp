@@ -25,10 +25,17 @@ const validateTaleInput = (data) => {
         errors.text = 'Text field\'s required'
     }
 
+    if (denyAccess(data.password)) {
+        errors.password = 'Password doesn\'t macth'
+    }
+
     return {
         errors,
         isValid: isEmpty(errors)
     }
+}
+const denyAccess = (access) => {
+  return access !== 'gnomo420';
 }
 
 // @route   GET api/tales/test
@@ -95,7 +102,11 @@ router.post('/register', (req, res) => {
 // @route   DELETE api/tales/:id
 // @desc    Delete tale
 // @access  Public
-router.delete('/:id', (req, res) => {
+router.delete('/:id/:access', (req, res) => {
+    if (denyAccess(req.params.access)) {
+        return res.status(401).json('Access Denied.')
+    }
+
     TalesModel.findById(req.params.id)
         .then(tale => {
             tale.remove().then(() => res.json({ success: true, msg: `tale "${tale.title}" deleted successfully` }))
